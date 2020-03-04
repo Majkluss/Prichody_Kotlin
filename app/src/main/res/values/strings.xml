@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Prichody</string>
+    <string name="prichod">btn_prichod</string>
+    <string name="odchod">btn_odchod</string>
+
+
+</resources>
