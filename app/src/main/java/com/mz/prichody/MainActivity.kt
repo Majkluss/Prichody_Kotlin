@@ -2,6 +2,7 @@ package com.mz.prichody
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
@@ -18,7 +19,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         val thread: Thread = object : Thread() {
             override fun run() {
                 try {
@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
                             // update TextView here!
                             aktualizujCas()
                             zobrazSaldo()
+
                         }
                     }
                 } catch (e: InterruptedException) {
@@ -44,9 +45,15 @@ class MainActivity : AppCompatActivity() {
     var saldo = 0.0f
     var casPrichodu = LocalDateTime.now(ZoneId.of("Europe/Prague")) //LocalDateTime.of(2020,2,28,10,0,0,0)
     var casOdchodu = LocalDateTime.now(ZoneId.of("Europe/Prague"))
+    var vypocet = 0.0f
+
+   /*private var PRIVATE_MODE = 0
+    private val PREF_NAME = "ulozeny_cas"
+    val sharedPref: SharedPreferences = getSharedPreferences(PREF_NAME, PRIVATE_MODE)*/
 
     val SHARED_PREFS: String  = "f"
-    val TEXT: String  = "s"
+    val TIME: String  = ""
+
     private var saldoCelkem: Float = 0.0f
 
     fun Prichod(view: View)
@@ -60,6 +67,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     //TODO: Nastavení příchozího / odchozího času a korekce salda při uložení!
+    //TODO: saldoCelkem se nikde neaktualizuje! Aktualizovat hodnotu!
 
     fun Odchod(view: View)
     {
@@ -85,10 +93,10 @@ class MainActivity : AppCompatActivity() {
     {
         val textView: TextView = findViewById(R.id.saldoDnes) as TextView
         val textViewc: TextView = findViewById(R.id.saldoCelkem) as TextView
-        var zobrazeneSaldoCelkem = saldo + saldoCelkem
+        vypocet = saldo + saldoCelkem
 
         textView.text = saldo.toString()
-        textViewc.text = zobrazeneSaldoCelkem.toString()
+        textViewc.text = vypocet.toString()
 
         //aktualizujSaldoCelkem()
     }
@@ -96,26 +104,18 @@ class MainActivity : AppCompatActivity() {
     // Uloží hodnotu Saldo celkem do repozitáře
     fun ulozSaldoCelkem()
     {
-        val zaznam = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE)
-        val zapis = zaznam.edit()
-        zapis.putFloat(TEXT, saldoCelkem)
-        zapis.apply()
+        val sharedPref = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE)
+        val editor = sharedPref.edit()
+        editor.putFloat(TIME, vypocet)
+        editor.apply()
     }
 
     // Načte hodnotu Saldo celkem z repozitáře
     fun nactiSaldoCelkem()
     {
-        val s = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE)
-        saldoCelkem = s.getFloat(TEXT, 0.0f)
+        val s = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE)
+        saldoCelkem = s.getFloat(TIME, 0.0f)
     }
-
-    // Nastaví hodnotu Saldo celkem
-    /*fun aktualizujSaldoCelkem()
-    {
-        val textView: TextView = findViewById(R.id.saldoCelkem) as TextView
-        var a = saldo + sal
-        textView.text = a.toString()
-    }*/
 
     // Aktualizuje čas a uloží jej do formátu HH:mm:ss
     fun aktualizujCas()
