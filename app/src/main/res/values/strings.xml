@@ -1,7 +1,13 @@
 <resources>
     <string name="app_name">Prichody</string>
-    <string name="prichod">btn_prichod</string>
-    <string name="odchod">btn_odchod</string>
+    <string name="btn_prichod">btn_prichod</string>
+    <string name="btn_odchod">btn_odchod</string>
+    <string name="btn_menu">btn_menu</string>
+    <string name="saldo_dnes">"Saldo dnes:"</string>
+    <string name="saldo_celkem">"Saldo celkem:"</string>
+    <string name="cas_prichodu">"Čas příchodu:"</string>
+    <string name="cas_odchodu">"Čas odchodu:"</string>
+
 
 
 </resources>

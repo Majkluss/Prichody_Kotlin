@@ -14,7 +14,8 @@ class NastaveniActivity : AppCompatActivity() {
 		setContentView(R.layout.activity_nastaveni)
 	}
 
-	fun jdiDoHome(view: View)
+	// TODO: Přidat funkci pro nulování celkového salda
+	fun jdiDoHome(@Suppress("UNUSED_PARAMETER")view: View)
 	{
 		val intent = Intent(this, MainActivity::class.java)
 		startActivity(intent)

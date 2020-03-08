@@ -26,18 +26,18 @@
             android:layout_width="80dp"
             android:layout_height="20dp"
             android:layout_marginStart="32dp"
-            app:layout_constraintBottom_toBottomOf="@+id/textView5"
-            app:layout_constraintStart_toEndOf="@+id/textView5"
-            app:layout_constraintTop_toTopOf="@+id/textView5" />
+            app:layout_constraintBottom_toBottomOf="@+id/casOdchoduTextView"
+            app:layout_constraintStart_toEndOf="@+id/casOdchoduTextView"
+            app:layout_constraintTop_toTopOf="@+id/casOdchoduTextView" />
 
         <TextView
             android:id="@+id/prichodCas"
             android:layout_width="80dp"
             android:layout_height="20dp"
             android:layout_marginStart="32dp"
-            app:layout_constraintBottom_toBottomOf="@+id/textView4"
-            app:layout_constraintStart_toEndOf="@+id/textView4"
-            app:layout_constraintTop_toTopOf="@+id/textView4" />
+            app:layout_constraintBottom_toBottomOf="@+id/casPrichoduTextView"
+            app:layout_constraintStart_toEndOf="@+id/casPrichoduTextView"
+            app:layout_constraintTop_toTopOf="@+id/casPrichoduTextView" />
 
         <TextView
             android:id="@+id/casMain"
@@ -70,7 +70,7 @@
             android:layout_height="125dp"
             android:layout_marginStart="30dp"
             android:background="@drawable/btn_in"
-            android:contentDescription="@string/prichod"
+            android:contentDescription="@string/btn_prichod"
             android:onClick="Prichod"
             android:src="@mipmap/arrow_down"
             android:tint="@color/colorIn"
@@ -86,7 +86,7 @@
             android:layout_height="125dp"
             android:layout_marginEnd="30dp"
             android:background="@drawable/btn_out"
-            android:contentDescription="@string/odchod"
+            android:contentDescription="@string/btn_odchod"
             android:onClick="Odchod"
             android:src="@mipmap/arrow_up"
             android:tint="@color/colorOut"
@@ -100,7 +100,8 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:background="@mipmap/menu"
-            android:onClick="jdiDoNastaveni"
+            android:contentDescription="@string/btn_menu"
+            android:onClick="JdiDoNastaveni"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -122,21 +123,21 @@
             app:layout_constraintVertical_bias="0.139" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/saldoDnestextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Saldo dnes:"
+            android:text="@string/saldo_dnes"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             app:layout_constraintBottom_toBottomOf="@+id/saldoDnes"
-            app:layout_constraintEnd_toEndOf="@+id/textView3"
+            app:layout_constraintEnd_toEndOf="@+id/saldoCelkemtextView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/saldoDnes" />
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/saldoCelkemtextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Saldo celkem:"
+            android:text="@string/saldo_celkem"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             app:layout_constraintBottom_toBottomOf="@+id/saldoCelkem"
             app:layout_constraintEnd_toStartOf="@+id/saldoDnes"
@@ -144,24 +145,24 @@
             app:layout_constraintTop_toTopOf="@+id/saldoCelkem" />
 
         <TextView
-            android:id="@+id/textView4"
+            android:id="@+id/casPrichoduTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="Čas příchodu:"
+            android:text="@string/cas_prichodu"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/casMain" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/casOdchoduTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:text="Čas odchodu:"
+            android:text="@string/cas_odchodu"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView4" />
+            app:layout_constraintTop_toBottomOf="@+id/casPrichoduTextView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
