@@ -4,15 +4,23 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.preference.PreferenceManager.getDefaultSharedPreferences
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.text.parseAsHtml
 import kotlinx.android.synthetic.main.activity_main.*
+import java.sql.Time
 import java.time.format.DateTimeFormatter
 import java.time.ZoneId
 import java.time.Duration
 import java.time.LocalDateTime
+import java.time.LocalTime
+import java.util.*
+import kotlin.system.measureTimeMillis
+
+class Time(internal var hours: Int, internal var minues: Int, internal var seconds: Int)
 
 class MainActivity : AppCompatActivity() {
 
@@ -38,23 +46,32 @@ class MainActivity : AppCompatActivity() {
         }
         NactiCasPrichodu()
         ZobrazCasPrichodu()
-
         thread.start()
     }
+
+    // TODO: https://www.programiz.com/kotlin-programming/examples/difference-time
 
     val formatter = DateTimeFormatter.ofPattern("HH:mm:ss")
     val delkaSmeny: Float = 8.0f
     val delkaPrestavky: Float = 0.5f
     var saldo = 0.0f
-    var casPrichoduNeform = LocalDateTime.now(ZoneId.of("Europe/Prague")) //LocalDateTime.of(2020,2,28,10,0,0,0)
+    var casPrichoduNeform = LocalTime.now(ZoneId.of("Europe/Prague")) //LocalDateTime.of(2020,2,28,10,0,0,0)
     var casPrichodu = casPrichoduNeform.format(formatter)
-    var casOdchoduNeform = LocalDateTime.now(ZoneId.of("Europe/Prague"))
+    var casOdchoduNeform = LocalTime.now(ZoneId.of("Europe/Prague"))
     var casOdchodu = casOdchoduNeform.format(formatter)
     var vypocet = 0.0f
     var casString: String? = ""
-    private var saldoCelkem: Float = 0.0f
+    var saldoCelkem: Float = 0.0f
     var shS: String = "sharedSaldo"
     var shP: String = "sharedPrichod"
+
+    val prichod = Time()
+    
+    fun VypocetIntervalu(start: casPrichodu, stop: casOdchodu): com.mz.prichody.Time{
+
+    }
+
+    val interval: Time = VypocetIntervalu(casPrichodu, casOdchodu)
 
     // TODO: Vytvořit správný formát zobrazeného salda HH:mm
     /*fun NactiCelek()
@@ -73,9 +90,10 @@ class MainActivity : AppCompatActivity() {
     {
         var t = Toast.makeText(this@MainActivity, "Příchod zaznamenán", Toast.LENGTH_SHORT)
         t.show()
-        casPrichoduNeform = LocalDateTime.now(ZoneId.of("Europe/Prague"))
+        casPrichoduNeform = LocalTime.now(ZoneId.of("Europe/Prague"))
         casPrichodu = casPrichoduNeform.format(formatter)
         prichodCas.text = casPrichodu
+        casString = casPrichodu
         UlozCasPrichodu()
     }
 
@@ -83,7 +101,7 @@ class MainActivity : AppCompatActivity() {
     {
         var t = Toast.makeText(this@MainActivity, "Odchod zaznamenán", Toast.LENGTH_SHORT)
         t.show()
-        casOdchoduNeform = LocalDateTime.now(ZoneId.of("Europe/Prague"))
+        casOdchoduNeform = LocalTime.now(ZoneId.of("Europe/Prague"))
         casOdchodu = casOdchoduNeform.format(formatter)
         odchodCas.text = casOdchodu
         VypocitejSaldo()
@@ -92,8 +110,9 @@ class MainActivity : AppCompatActivity() {
 
     fun VypocitejSaldo()
     {
-        val doba = Duration.between(casPrichoduNeform, casOdchoduNeform)
-        val smenaHodiny = (doba.getSeconds().toFloat())-delkaSmeny-delkaPrestavky
+
+        val doba = Duration.between(casPrichoduNeform, casOdchoduNeform).toMillis()
+        val smenaHodiny = ((doba.toFloat())/1000)-delkaSmeny-delkaPrestavky //60/60/1000
         saldo = "%.1f".format(smenaHodiny).toFloat()
     }
 
@@ -110,8 +129,11 @@ class MainActivity : AppCompatActivity() {
     fun UlozCasPrichodu()
     {
         val sharedPrefCas =  getSharedPreferences(shP,Context.MODE_PRIVATE)
+        val sharedPrefCasN = getSharedPreferences("neformatovany", Context.MODE_PRIVATE)
         val editor = sharedPrefCas.edit()
+        val editorN = sharedPrefCasN.edit()
         editor.putString(shP, casPrichodu.toString())
+        //editor.putLong("neformatovany", casPrichoduNeform.toLong())
         editor.commit()
     }
 
@@ -119,13 +141,16 @@ class MainActivity : AppCompatActivity() {
     {
         val c: SharedPreferences = getSharedPreferences(shP, Context.MODE_PRIVATE)
         casString = c.getString(shP,"casPrichodu")
+        //casPrichodu = LocalDateTime.parse(casString, formatter)
+        casPrichodu = casString
     }
 
     // Uloží hodnotu Saldo celkem do repozitáře
     fun UlozSaldoCelkem()
     {
-        val sharedPrefSaldo = getSharedPreferences(shS, Context.MODE_PRIVATE)
-        val editor = sharedPrefSaldo.edit()
+        //val sharedPrefSaldo = getSharedPreferences(shS, Context.MODE_PRIVATE)
+        var prefsSaldo: SharedPreferences = getDefaultSharedPreferences(getApplicationContext());
+        val editor = prefsSaldo.edit()
         editor.putFloat(shS, vypocet)
         //editor.apply()
         editor.commit()
@@ -134,14 +159,15 @@ class MainActivity : AppCompatActivity() {
     // Načte hodnotu Saldo celkem z repozitáře
     fun NactiSaldoCelkem()
     {
-        val s = getSharedPreferences(shS, Context.MODE_PRIVATE)
-        saldoCelkem = s.getFloat(shS, 0.0f)
+        var prefsSaldo: SharedPreferences = getDefaultSharedPreferences(getApplicationContext());
+        //val s = getSharedPreferences(shS, Context.MODE_PRIVATE)
+        saldoCelkem = prefsSaldo.getFloat(shS, 0.0f)
     }
 
     // Aktualizuje čas a uloží jej do formátu HH:mm:ss
     fun AktualizujCas()
     {
-        val cas = LocalDateTime.now(ZoneId.of("Europe/Prague"))
+        val cas = LocalTime.now(ZoneId.of("Europe/Prague"))
         val formatter = DateTimeFormatter.ofPattern("HH:mm:ss")
         val aktualniCasFormatovany = cas.format(formatter)
         val textView: TextView = findViewById(R.id.casMain) as TextView
@@ -154,16 +180,25 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, NastaveniActivity::class.java)
         startActivity(intent)
     }
+
+    /*val intent = Intent(this@MainActivity,NastaveniActivity::class.java)
+    intent.putExtra("Username","John Doe")
+    startActivity(intent)*/
 }
 
-/*We can set values on our SharedPreference instance in Kotlin in the following way:
+/*Send value from HomeActivity
+val intent = Intent(this@HomeActivity,ProfileActivity::class.java)
+intent.putExtra("Username","John Doe")
+startActivity(intent)
+Get values in ProfileActivity
+val profileName=intent.getStringExtra("Username")*/
 
+/*We can set values on our SharedPreference instance in Kotlin in the following way:
 val sharedPreference =  getSharedPreferences("PREFERENCE_NAME",Context.MODE_PRIVATE)
 var editor = sharedPreference.edit()
 editor.putString("username","Anupam")
 editor.putLong("l",100L)
 editor.commit()
 To retrieve values we do:
-
 sharedPreference.getString("username","defaultName")
 sharedPreference.getLong("l",1L)*/
