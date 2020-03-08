@@ -50,7 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="#FB0909"
-            android:onClick="SmazSaldo"
+            android:onClick="smazSaldo"
             android:text="@string/btn_smazat_saldo"
             app:layout_constraintBottom_toTopOf="@+id/jdiDoHomebtn"
             app:layout_constraintEnd_toEndOf="parent"

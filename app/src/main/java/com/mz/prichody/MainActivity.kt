@@ -1,5 +1,4 @@
 package com.mz.prichody
-
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -9,25 +8,18 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.text.parseAsHtml
 import kotlinx.android.synthetic.main.activity_main.*
-import java.sql.Time
-import java.time.format.DateTimeFormatter
-import java.time.ZoneId
 import java.time.Duration
-import java.time.LocalDateTime
 import java.time.LocalTime
-import java.util.*
-import kotlin.system.measureTimeMillis
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
-class Time(internal var hours: Int, internal var minues: Int, internal var seconds: Int)
 
-class MainActivity : AppCompatActivity() {
-
+open class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        NactiSaldoCelkem()
+        nactiSaldoCelkem()
         val thread: Thread = object : Thread() {
             override fun run() {
                 try {
@@ -35,17 +27,17 @@ class MainActivity : AppCompatActivity() {
                         sleep(1000)
                         runOnUiThread {
                             // update TextView here!
-                            AktualizujCas()
-                            ZobrazSaldo()
-                            UlozSaldoCelkem()
+                            aktualizujCas()
+                            zobrazSaldo()
+                            ulozSaldoCelkem()
                         }
                     }
                 } catch (e: InterruptedException) {
                 }
             }
         }
-        NactiCasPrichodu()
-        ZobrazCasPrichodu()
+        nactiCasPrichodu()
+        zobrazCasPrichodu()
         thread.start()
     }
 
@@ -65,28 +57,15 @@ class MainActivity : AppCompatActivity() {
     var shS: String = "sharedSaldo"
     var shP: String = "sharedPrichod"
 
-    val prichod = Time()
-    
-    fun VypocetIntervalu(start: casPrichodu, stop: casOdchodu): com.mz.prichody.Time{
-
-    }
-
-    val interval: Time = VypocetIntervalu(casPrichodu, casOdchodu)
 
     // TODO: Vytvořit správný formát zobrazeného salda HH:mm
-    /*fun NactiCelek()
-    {
-        val textView: TextView = findViewById(R.id.textViewCelek) as TextView
-        var celek = casPrichodu.toFloat() - casOdchodu.toFloat()
-        textView.text = celek.toString()
-    }*/
 
-    fun ZobrazCasPrichodu()
+    fun zobrazCasPrichodu()
     {
         prichodCas.text = casString
     }
 
-    fun Prichod(@Suppress("UNUSED_PARAMETER")view: View)
+    fun prichod(@Suppress("UNUSED_PARAMETER")view: View)
     {
         var t = Toast.makeText(this@MainActivity, "Příchod zaznamenán", Toast.LENGTH_SHORT)
         t.show()
@@ -94,78 +73,72 @@ class MainActivity : AppCompatActivity() {
         casPrichodu = casPrichoduNeform.format(formatter)
         prichodCas.text = casPrichodu
         casString = casPrichodu
-        UlozCasPrichodu()
+        ulozCasPrichodu()
     }
 
-    fun Odchod(@Suppress("UNUSED_PARAMETER")view: View)
+    fun odchod(@Suppress("UNUSED_PARAMETER")view: View)
     {
         var t = Toast.makeText(this@MainActivity, "Odchod zaznamenán", Toast.LENGTH_SHORT)
         t.show()
         casOdchoduNeform = LocalTime.now(ZoneId.of("Europe/Prague"))
         casOdchodu = casOdchoduNeform.format(formatter)
         odchodCas.text = casOdchodu
-        VypocitejSaldo()
-        UlozSaldoCelkem()
+        vypocitejSaldo()
+        ulozSaldoCelkem()
     }
 
-    fun VypocitejSaldo()
+    fun vypocitejSaldo()
     {
-
         val doba = Duration.between(casPrichoduNeform, casOdchoduNeform).toMillis()
         val smenaHodiny = ((doba.toFloat())/1000)-delkaSmeny-delkaPrestavky //60/60/1000
         saldo = "%.1f".format(smenaHodiny).toFloat()
     }
 
     // Zobrazí Saldo
-    fun ZobrazSaldo()
+    fun zobrazSaldo()
     {
         val textView: TextView = findViewById(R.id.saldoDnes) as TextView
         val textViewc: TextView = findViewById(R.id.saldoCelkem) as TextView
-        vypocet = saldo + saldoCelkem
+        vypocet = "%.1f".format(saldo + saldoCelkem).toFloat()
         textView.text = saldo.toString()
         textViewc.text = vypocet.toString()
     }
 
-    fun UlozCasPrichodu()
+    fun ulozCasPrichodu()
     {
-        val sharedPrefCas =  getSharedPreferences(shP,Context.MODE_PRIVATE)
-        val sharedPrefCasN = getSharedPreferences("neformatovany", Context.MODE_PRIVATE)
-        val editor = sharedPrefCas.edit()
-        val editorN = sharedPrefCasN.edit()
-        editor.putString(shP, casPrichodu.toString())
-        //editor.putLong("neformatovany", casPrichoduNeform.toLong())
-        editor.commit()
+        var sharedPrefCas = getDefaultSharedPreferences(this)
+        //var sharedPrefCas =  getSharedPreferences(shP,Context.MODE_PRIVATE)
+        var editor = sharedPrefCas.edit()
+        editor.putString(shP, casPrichodu.toString()).apply()
     }
 
-    fun NactiCasPrichodu()
+    fun nactiCasPrichodu()
     {
-        val c: SharedPreferences = getSharedPreferences(shP, Context.MODE_PRIVATE)
-        casString = c.getString(shP,"casPrichodu")
-        //casPrichodu = LocalDateTime.parse(casString, formatter)
+        var sharedPrefCas = getDefaultSharedPreferences(this)
+        //al c: SharedPreferences = getSharedPreferences(shP, Context.MODE_PRIVATE)
+        casString = sharedPrefCas.getString(shP,"casPrichodu")
         casPrichodu = casString
     }
 
     // Uloží hodnotu Saldo celkem do repozitáře
-    fun UlozSaldoCelkem()
+    fun ulozSaldoCelkem()
     {
-        //val sharedPrefSaldo = getSharedPreferences(shS, Context.MODE_PRIVATE)
-        var prefsSaldo: SharedPreferences = getDefaultSharedPreferences(getApplicationContext());
+        var prefsSaldo = getDefaultSharedPreferences(this)
+        //var prefsSaldo: SharedPreferences = getDefaultSharedPreferences(applicationContext)
         val editor = prefsSaldo.edit()
-        editor.putFloat(shS, vypocet)
-        //editor.apply()
-        editor.commit()
+        editor.putFloat(shS, vypocet).apply()
     }
 
     // Načte hodnotu Saldo celkem z repozitáře
-    fun NactiSaldoCelkem()
+    fun nactiSaldoCelkem()
     {
-        var prefsSaldo: SharedPreferences = getDefaultSharedPreferences(getApplicationContext());
-        //val s = getSharedPreferences(shS, Context.MODE_PRIVATE)
+        //var prefsSaldo: SharedPreferences = getDefaultSharedPreferences(applicationContext)
+        var prefsSaldo = getDefaultSharedPreferences(this)
         saldoCelkem = prefsSaldo.getFloat(shS, 0.0f)
     }
 
     // Aktualizuje čas a uloží jej do formátu HH:mm:ss
-    fun AktualizujCas()
+    fun aktualizujCas()
     {
         val cas = LocalTime.now(ZoneId.of("Europe/Prague"))
         val formatter = DateTimeFormatter.ofPattern("HH:mm:ss")
@@ -175,30 +148,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Přechod do aktivity Nastavení
-    fun JdiDoNastaveni(@Suppress("UNUSED_PARAMETER")view: View)
+    fun jdiDoNastaveni(@Suppress("UNUSED_PARAMETER")view: View)
     {
         val intent = Intent(this, NastaveniActivity::class.java)
+        //intent.putExtra(sP)
         startActivity(intent)
     }
 
-    /*val intent = Intent(this@MainActivity,NastaveniActivity::class.java)
-    intent.putExtra("Username","John Doe")
-    startActivity(intent)*/
 }
-
-/*Send value from HomeActivity
-val intent = Intent(this@HomeActivity,ProfileActivity::class.java)
-intent.putExtra("Username","John Doe")
-startActivity(intent)
-Get values in ProfileActivity
-val profileName=intent.getStringExtra("Username")*/
-
-/*We can set values on our SharedPreference instance in Kotlin in the following way:
-val sharedPreference =  getSharedPreferences("PREFERENCE_NAME",Context.MODE_PRIVATE)
-var editor = sharedPreference.edit()
-editor.putString("username","Anupam")
-editor.putLong("l",100L)
-editor.commit()
-To retrieve values we do:
-sharedPreference.getString("username","defaultName")
-sharedPreference.getLong("l",1L)*/
